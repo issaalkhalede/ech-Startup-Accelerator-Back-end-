@@ -25,6 +25,11 @@ def index(request , methods = ('GET','POST')):
         file = read_json()
 
         req = json.loads(request.body)
+        
+        for i in file:
+            if i['id'] == req['id']:
+                return JsonResponse({'error' : 'ID not vaild' })
+            
         file.append(req)
 
         with open('data.json', 'w') as outfile:
@@ -33,7 +38,7 @@ def index(request , methods = ('GET','POST')):
         return JsonResponse(file,safe=False)
         
 
-def get_fruit(request,id):
+def get_fruit(request,id ):
     #define var to put the id in it
     obj = None
     
@@ -49,4 +54,3 @@ def get_fruit(request,id):
         return JsonResponse({'error' : 'ID not found' })
    
     return JsonResponse(obj)
-        
