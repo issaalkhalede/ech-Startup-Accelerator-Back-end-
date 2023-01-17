@@ -1,33 +1,44 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 import json
+from django.views.decorators.csrf import csrf_exempt
+
+def read_json():
+    with open('data.json', 'r', encoding='utf-8') as file:
+        file = json.load(file)
+
+    json_file =[]
+    json_file = file
+    
+    return json_file
+    
 
 # Create your views here.
-def index(request):
+@csrf_exempt
+def index(request , methods = ('GET','POST')):
     # Opening JSON file
-    f = open('data.json')
+    if request.method == 'GET' :
+        file = read_json()
+        return JsonResponse(file,safe=False)
     
-    # returns JSON object as a dictionary
-    data = json.load(f)
-    
-    # Closing file
-    f.close()
-    
-    #return the data
-    return JsonResponse(data,safe=False)
+    if request.method == 'POST' :
+        file = read_json()
+
+        req = json.loads(request.body)
+        file.append(req)
+
+        with open('data.json', 'w') as outfile:
+            json.dump(file, outfile)
+            
+        return JsonResponse(file,safe=False)
+        
 
 def get_fruit(request,id):
-    # Opening JSON file
-    f = open('data.json')
-    
-    # returns JSON object as a dictionary
-    data = json.load(f)
-    
     #define var to put the id in it
     obj = None
     
     # make for loop to check the data
-    for i in data :
+    for i in json_file :
         if i['id'] == id:
             obj = i
             break
@@ -35,12 +46,6 @@ def get_fruit(request,id):
     #check the data if it's null or invald
     if obj == None:
         return JsonResponse({'error' : 'ID not found' })
-    
-    # Closing file
-    f.close()    
+   
     return JsonResponse(obj)
-
-def add_fruit(request, methods = ('GET','POST')):
-    if request.method == 'GET' :
-        return render(request, 'templates/add_fruit.html')
         
