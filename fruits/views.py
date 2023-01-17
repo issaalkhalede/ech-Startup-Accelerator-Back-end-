@@ -37,8 +37,9 @@ def get_fruit(request,id):
     #define var to put the id in it
     obj = None
     
+    file = read_json()
     # make for loop to check the data
-    for i in json_file :
+    for i in file :
         if i['id'] == id:
             obj = i
             break
